@@ -68,7 +68,7 @@
                     </a>
 
                     <span class="text-2 ml-2">
-                        v1.0
+                        v1.0.x
                     </span>
                     <!-- Logo End -->
 
@@ -126,6 +126,7 @@
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_views">Views</a></li>
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_directives">Directives</a></li>
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_default_theme">Default Theme</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#idocs_usage_priority">Priority</a></li>
                         </ul>
                     </li>
 
@@ -182,11 +183,11 @@
                             </a>:
                         </p>
 
-                        <p>
-                            <code>
-                                > composer require laravel-ready/theme-manager
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ composer require laravel-ready/theme-manager
                             </code>
-                        </p>
+                        </pre>
 
                         <h4>
                             Publish configs
@@ -197,7 +198,7 @@
                         </p>
 
                         <pre class="mb-0">
-                            <code class="bash py-0">
+                            <code class="yaml py-0">
 $ php artisan vendor:publish --tag=theme-manager-config
                             </code>
                         </pre>
@@ -357,6 +358,14 @@ public function boot()
                                         theme-manager:group=admin, theme=my-theme
                                     </code>
                                 </li>
+                                <li>
+                                    <code class="mr-2">
+                                        theme-manager:group=admin
+                                    </code>
+
+                                    in this way <code>theme</code> is not defined because theme setting with 
+                                    service class</a> but group field required using <a href="#idocs_usage_default_theme">default theme</a> option.
+                                </li>
                             </ul>
                         </p>
 
@@ -467,7 +476,7 @@ class AnyController extends Controller
 
                     <!-- Directives -->
                     <section id="idocs_usage_directives">
-                        <h3 class="mb-2">
+                        <h3>
                             Directives
                         </h3>
 
@@ -599,7 +608,8 @@ class AnyController extends Controller
                         </h3>
 
                         <p class="mb-5">
-                            We can define default themes with config file and service class.
+                            We can show default theme when target theme is not found. 
+                            Can define default themes with config file and service class.
                         </p>
 
                         <h4>
@@ -607,7 +617,7 @@ class AnyController extends Controller
                         </h4>
 
                         <p>
-                            Open <code>theme-manager.php</code> file then set <code>default_theme</code> value.
+                            Open <code>theme-manager.php</code> ( <i>see <a href="#idocs_installation">installation</a> part</i> ) file then set <code>default_theme</code> value.
                             <code>default_theme</code> supports single and multiple themes.
                         </p>
 
@@ -650,16 +660,59 @@ return [
                             Service class
                         </h4>
 
+                        <p>
+                            Also we can pass default themes pass through with service class.
+                        </p>
+
                         <pre class="mb-0">
                             <code class="php py-0">
+// add default theme/s
 ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
+
+// remove default theme/s
+ThemeManager::removeDefaultTheme(['web:red-swan', 'admin:admin-who']);
                             </code>
                         </pre>
 
                         <p>
-                            Both of two usage requires default group definition on middleware.
-                            Just assign default group to <a href="#idocs_usage_middleware">middleware</a>.
+                            Both of two usage requires default <code>group</code> definition on middleware.
+                            Just assign default group to <a href="#idocs_usage_middleware">middleware</a>. 
+                            If theme already defined in middleware this option does not working beacuse middleware <code>theme</code> definiton has high 
+                            <a href="#idocs_usage_priority">priority</a>.
                         </p>
+
+                        <p>
+                            ⚠️ <code>addDefaultTheme</code> and <code>removeDefaultTheme</code> methods does not effects config file.
+
+                        </p>
+                    </section>
+
+                    <hr class="divider">
+
+                    <!-- Priority -->
+                    <section id="idocs_usage_priority">
+                        <h3 class="mb-2">
+                            Priority
+                        </h3>
+
+                        <p class="mb-5">
+                            At this moment we see multiple ways to setting theme and default theme but all of them working in order.
+                        </p>
+
+                        <ol>
+                            <li>
+                                Middleware defined theme comes first ( <i>if the theme is not found, goes to second check point</i> )
+                            </li>
+                            <li>
+                                Service class defined theme ( <i>if the theme is not found, goes to third check point</i> )
+                            </li>
+                            <li>
+                                Default theme ( <i>will define in config or service class</i> )
+                            </li>
+                            <li>
+                                If default theme is not exists throws error and application breaks
+                            </li>
+                        </ol>
                     </section>
 
                     <hr class="divider">
@@ -671,7 +724,7 @@ ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
                         </h2>
 
                         <p class="lead">
-
+                            ....
                         </p>
                     </section>
 
@@ -736,14 +789,56 @@ ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
                             You can manage themes with commands.
                         </p>
 
+                        <!-- Create -->
+
+                        <h5>
+                            Create new theme
+                        </h5>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:make
+                            </code>
+                        </pre>
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+Theme Name:
+> Fantastic Theme
+
+Theme Description /optional/:
+> Enim laboris minim occaecat incididunt eiusmod sit excepteur reprehenderit enim consectetur Lorem.
+
+Author Name:
+> EgoistDeveloper
+
+Author Contact Address or Email /optional/:
+> https://github.com/EgoistDeveloper/
+
+Theme Group:
+> web
+
+Theme "web:fantastic-theme" created successfully
+                            </code>
+                        </pre>
+
+                        <!-- List -->
+
                         <h5>
                             List installed themes
                         </h5>
 
-                        <p>
-                            <code>> php artisan theme-manager:list</code>
-                        </p>
-
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:list
+                            </code>
+                        </pre>
 
                         <p>
                             <b>
@@ -755,15 +850,43 @@ ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
                             <code class="yaml py-0">
 ⚠️  Check the "theme-config.json" file in the own theme folder for more information.
 
-+-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
-| Index | Default | Name         | Alias        | Group | Description                       | Authors         | Version |
-+-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
-|  [1]  | Yes     | Admin Who?   | admin-who    | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
-|  [2]  | -       | Gentelella   | gentelella   | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
-|  [3]  | -       | Dark Night   | dark-night   | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
-|  [4]  | -       | Green Energy | green-energy | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
-|  [5]  | Yes     | Red Swan     | red-swan     | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
-+-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+| Index | Default | Name            | Alias           | Group | Description                       | Authors         | Version |
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+|  [1]  | Yes     | Admin Who?      | admin-who       | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
+|  [2]  | -       | Gentelella      | gentelella      | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
+|  [3]  | -       | Dark Night      | dark-night      | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
+|  [4]  | -       | Fantastic Theme | fantastic-theme | web   | Enim laboris minim occaecat in... | EgoistDeveloper | 1.0.0   |
+|  [5]  | -       | Green Energy    | green-energy    | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
+|  [6]  | Yes     | Red Swan        | red-swan        | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+                            </code>
+                        </pre>
+
+                        <!-- Delete -->
+
+                        <h5>
+                            Delete selected theme
+                        </h5>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:destroy web:fantastic-theme
+                            </code>
+                        </pre>
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+This theme will be delete. Are you sure? (yes/no):
+> yes
+
+Theme "web:fantastic-theme" deleted.
                             </code>
                         </pre>
 
