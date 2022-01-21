@@ -388,6 +388,8 @@ public function boot()
                             Theme loading and other options are depends to your logic. You can use <code>ThemeManager</code> service in controller, custom middleware etc.
                         </p>
 
+                        <!-- scanThemes -->
+
                         <h4>
                             Scan installed themes
                         </h4>
@@ -400,6 +402,8 @@ public function boot()
                             Just pass <code>true</code> as parameter or use <code>ThemeManager::reScanThemes();</code> method.
                         </p>
 
+                        <!-- getCurrentTheme -->
+
                         <h4>
                             Get current theme
                         </h4>
@@ -408,6 +412,8 @@ public function boot()
                             <code>ThemeManager::getCurrentTheme();</code> returns current theme details.
                         </p>
 
+                        <!-- getTheme -->
+
                         <h4>
                             Get target theme
                         </h4>
@@ -415,6 +421,8 @@ public function boot()
                         <p>
                             <code>ThemeManager::getTheme();</code> returns requested theme details.
                         </p>
+
+                        <!-- setTheme -->
 
                         <h4>
                             Set current theme
@@ -425,6 +433,24 @@ public function boot()
 
                             <code>ThemeManager::setTheme('my-theme', 'theme-group')</code>
                         </p>
+
+                        <!-- setThemeStatus -->
+                        
+                        <h4>
+                            Set theme status
+                        </h4>
+
+                        <p>
+                            <code>setThemeStatus</code> is required two parameters. Target theme and theme group.
+
+                            <code>ThemeManager::setThemeStatus('my-theme', 'theme-group', true|false)</code>
+                        </p>
+
+                        <p>
+                            or update all themes
+                        </p>
+
+                        <code>ThemeManager::setThemeStatusAll(true|false)</code>
                     </section>
 
                     <hr class="divider">
@@ -805,16 +831,15 @@ $ php artisan theme-manager:list
                             <code class="yaml py-0">
 ⚠️  Check the "theme-config.json" file in the own theme folder for more information.
 
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
-| Index | Default | Name            | Alias           | Group | Description                       | Authors         | Version |
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
-|  [1]  | Yes     | Admin Who?      | admin-who       | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
-|  [2]  | -       | Gentelella      | gentelella      | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
-|  [3]  | -       | Dark Night      | dark-night      | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
-|  [4]  | -       | Fantastic Theme | fantastic-theme | web   | Enim laboris minim occaecat in... | EgoistDeveloper | 1.0.0   |
-|  [5]  | -       | Green Energy    | green-energy    | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
-|  [6]  | Yes     | Red Swan        | red-swan        | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
++-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
+| Index | Default | Name         | Alias        | Status  | Group | Description                       | Authors         | Version |
++-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
+|  [1]  | -       | Admin Who?   | admin-who    | Active  | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
+|  [2]  | -       | Gentelella   | gentelella   | Active  | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
+|  [3]  | -       | Dark Night   | dark-night   | Active  | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
+|  [4]  | -       | Green Energy | green-energy | Active  | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
+|  [5]  | -       | Red Swan     | red-swan     | Passive | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
++-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
                             </code>
                         </pre>
 
@@ -842,6 +867,32 @@ This theme will be delete. Are you sure? (yes/no):
 > yes
 
 Theme "web:fantastic-theme" deleted.
+                            </code>
+                        </pre>
+
+                        <!-- Status -->
+
+                        <h5 class="mb-0">
+                            Set theme status
+                        </h5>
+
+                        <p>
+                            Update specific theme status.
+                        </p>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:status web:fantastic-theme true|false
+                            </code>
+                        </pre>
+
+                        <p>
+                            Update all themes statuses.
+                        </p>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:status all true|false
                             </code>
                         </pre>
 
