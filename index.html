@@ -134,8 +134,8 @@
                         <a class="nav-link" href="#idocs_theme">✳️ Theme</a>
 
                         <ul class="nav flex-column">
-                            <li class="nav-item"><a class="nav-link" href="#idocs_theme_folder_structure">Folder Structure</a></li>
                             <li class="nav-item"><a class="nav-link" href="#idocs_theme_commands">Commands</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#idocs_theme_folder_structure">Folder Structure</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -730,6 +730,121 @@ ThemeManager::removeDefaultTheme(['web:red-swan', 'admin:admin-who']);
 
                     <hr class="divider">
 
+                    <!-- Commands -->
+                    <section id="idocs_theme_commands">
+                        <h3 class="mb-2">
+                            Commands
+                        </h3>
+
+                        <p class="mb-5">
+                            You can manage themes with commands.
+                        </p>
+
+                        <!-- Create -->
+
+                        <h5 class="mb-0">
+                            Create new theme
+                        </h5>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:make
+                            </code>
+                        </pre>
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+Theme Name:
+> Fantastic Theme
+
+Theme Description /optional/:
+> Enim laboris minim occaecat incididunt eiusmod sit excepteur reprehenderit enim consectetur Lorem.
+
+Author Name:
+> EgoistDeveloper
+
+Author Contact Address or Email /optional/:
+> https://github.com/EgoistDeveloper/
+
+Theme Group:
+> web
+
+Theme "web:fantastic-theme" created successfully
+                            </code>
+                        </pre>
+
+                        <!-- List -->
+
+                        <h5 class="mb-0">
+                            List installed themes
+                        </h5>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:list
+                            </code>
+                        </pre>
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+⚠️  Check the "theme-config.json" file in the own theme folder for more information.
+
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+| Index | Default | Name            | Alias           | Group | Description                       | Authors         | Version |
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+|  [1]  | Yes     | Admin Who?      | admin-who       | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
+|  [2]  | -       | Gentelella      | gentelella      | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
+|  [3]  | -       | Dark Night      | dark-night      | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
+|  [4]  | -       | Fantastic Theme | fantastic-theme | web   | Enim laboris minim occaecat in... | EgoistDeveloper | 1.0.0   |
+|  [5]  | -       | Green Energy    | green-energy    | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
+|  [6]  | Yes     | Red Swan        | red-swan        | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
++-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
+                            </code>
+                        </pre>
+
+                        <!-- Delete -->
+
+                        <h5 class="mb-0">
+                            Delete selected theme
+                        </h5>
+
+                        <pre class="mb-0">
+                            <code class="yaml py-0">
+$ php artisan theme-manager:destroy web:fantastic-theme
+                            </code>
+                        </pre>
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+This theme will be delete. Are you sure? (yes/no):
+> yes
+
+Theme "web:fantastic-theme" deleted.
+                            </code>
+                        </pre>
+
+                    </section>
+
+                    <hr class="divider">
+
                     <!-- Folder Structure -->
                     <section id="idocs_theme_folder_structure">
                         <h4 class="mt-5">
@@ -775,121 +890,6 @@ ThemeManager::removeDefaultTheme(['web:red-swan', 'admin:admin-who']);
 
                             You should publish this package configs, see installation part.
                         </p>
-                    </section>
-
-                    <hr class="divider">
-
-                    <!-- Commands -->
-                    <section id="idocs_theme_commands">
-                        <h3 class="mb-2">
-                            Commands
-                        </h3>
-
-                        <p>
-                            You can manage themes with commands.
-                        </p>
-
-                        <!-- Create -->
-
-                        <h5>
-                            Create new theme
-                        </h5>
-
-                        <pre class="mb-0">
-                            <code class="yaml py-0">
-$ php artisan theme-manager:make
-                            </code>
-                        </pre>
-
-                        <p>
-                            <b>
-                                Result:
-                            </b>
-                        </p>
-
-                        <pre>
-                            <code class="yaml py-0">
-Theme Name:
-> Fantastic Theme
-
-Theme Description /optional/:
-> Enim laboris minim occaecat incididunt eiusmod sit excepteur reprehenderit enim consectetur Lorem.
-
-Author Name:
-> EgoistDeveloper
-
-Author Contact Address or Email /optional/:
-> https://github.com/EgoistDeveloper/
-
-Theme Group:
-> web
-
-Theme "web:fantastic-theme" created successfully
-                            </code>
-                        </pre>
-
-                        <!-- List -->
-
-                        <h5>
-                            List installed themes
-                        </h5>
-
-                        <pre class="mb-0">
-                            <code class="yaml py-0">
-$ php artisan theme-manager:list
-                            </code>
-                        </pre>
-
-                        <p>
-                            <b>
-                                Result:
-                            </b>
-                        </p>
-
-                        <pre>
-                            <code class="yaml py-0">
-⚠️  Check the "theme-config.json" file in the own theme folder for more information.
-
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
-| Index | Default | Name            | Alias           | Group | Description                       | Authors         | Version |
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
-|  [1]  | Yes     | Admin Who?      | admin-who       | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
-|  [2]  | -       | Gentelella      | gentelella      | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
-|  [3]  | -       | Dark Night      | dark-night      | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
-|  [4]  | -       | Fantastic Theme | fantastic-theme | web   | Enim laboris minim occaecat in... | EgoistDeveloper | 1.0.0   |
-|  [5]  | -       | Green Energy    | green-energy    | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
-|  [6]  | Yes     | Red Swan        | red-swan        | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
-+-------+---------+-----------------+-----------------+-------+-----------------------------------+-----------------+---------+
-                            </code>
-                        </pre>
-
-                        <!-- Delete -->
-
-                        <h5>
-                            Delete selected theme
-                        </h5>
-
-                        <pre class="mb-0">
-                            <code class="yaml py-0">
-$ php artisan theme-manager:destroy web:fantastic-theme
-                            </code>
-                        </pre>
-
-                        <p>
-                            <b>
-                                Result:
-                            </b>
-                        </p>
-
-                        <pre>
-                            <code class="yaml py-0">
-This theme will be delete. Are you sure? (yes/no):
-> yes
-
-Theme "web:fantastic-theme" deleted.
-                            </code>
-                        </pre>
-
                     </section>
                 </div>
             </div>
