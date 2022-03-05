@@ -83,6 +83,7 @@
                         <ul class="navbar-nav">
                             <li>
                                 <a target="_blank" href="https://github.com/laravel-ready/theme-manager">
+                                    <i class="fab fa-github mr-1"></i>
                                     Github
                                 </a>
                             </li>
@@ -216,8 +217,13 @@ $ php artisan vendor:publish --tag=theme-manager-config
                         </p>
 
                         <h5 class="m-0">
-                            First way routes/{web}.php
+                            Method 1: routes/{web}.php
                         </h5>
+
+                        <p class="mt-4">
+                            We can use it in <code>web.php</code> or <code>any-custom.php</code> file but 
+                            these route files should work with web middleware <code>web</code>.
+                        </p>
 
                         <pre class="mb-0">
                             <code class="php py-0">
@@ -230,8 +236,13 @@ Route::prefix('/')->middleware(['theme-manager', 'another-mw'])->group(function 
                         </pre>
 
                         <h5 class="m-0">
-                            Second way RouteServiceProvider.php
+                            Method 2: RouteServiceProvider.php
                         </h5>
+
+                        <p class="mt-4">
+                            You can find <code>RouteServiceProvider.php</code> in <code>app/Providers</code> folder. 
+                            Also, this method affects sub-routes. If you want to use a specific route or group use the method 1.
+                        </p>
 
                         <pre class="mb-0">
                             <code class="php py-0">
@@ -278,8 +289,8 @@ public function boot()
                         </h3>
 
                         <p>
-                            Theme Manager works with <code>theme</code> and <code>group</code> pair. We can define default themes in routes and also you
-                            can restrict with the route specific theme groups.
+                            Theme Manager works with <code>vendor/theme</code> pair. 
+                            We can define default themes in routes and also you can restrict with the route specific theme <code>group</code>.
                         </p>
 
                         <p>
@@ -304,35 +315,21 @@ public function boot()
                                     </td>
                                     <td>
                                         <code>
-                                            theme-manager:theme=my-theme
+                                            theme-manager: theme=vendor-x/theme-y
                                         </code>
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>
-                                        <code>group</code>
+                                        <code>vendor</code>
                                     </td>
                                     <td>
-                                        Specify group alias
-                                    </td>
-                                    <td>
-                                        <code>
-                                            theme-manager:group=admin
-                                        </code>
-                                    </td>
-                                </tr>
-                                <tr>
-
-                                    <td>
-                                        <code>restrict_group</code>
-                                    </td>
-                                    <td>
-                                        Restrict route with target group
+                                        Restrict with specific vendor
                                     </td>
                                     <td>
                                         <code>
-                                            theme-manager:restrict_group=admin
+                                            theme-manager: group=admin
                                         </code>
                                     </td>
                                 </tr>
@@ -340,36 +337,41 @@ public function boot()
                         </table>
 
                         <p>
-                            Combined usage examples:
+                            <b>Combined usage examples:</b>
 
                             <ul>
                                 <li>
                                     <code>
-                                        theme-manager:theme=my-theme, group=admin, restrict_group=admin
+                                        theme-manager: theme=admin/my-theme, vendor=admin
                                     </code>
-                                </li>
-                                <li>
-                                    <code>
-                                        theme-manager:theme=my-theme, group=admin
-                                    </code>
-                                </li>
-                                <li>
-                                    <code>
-                                        theme-manager:group=admin, theme=my-theme
-                                    </code>
+
+                                    <ul>
+                                        <li>
+                                            <b>theme</b>: default theme
+                                        </li>
+                                        <li>
+                                            <b>vendor</b>: default vendor
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li>
                                     <code class="mr-2">
-                                        theme-manager:group=admin
+                                        theme-manager: vendor=admin
                                     </code>
 
-                                    in this way <code>theme</code> is not defined because theme setting with 
-                                    service class</a> but group field required using <a href="#idocs_usage_default_theme">default theme</a> option.
+                                    <ul>
+                                        <li>
+                                            In this way, the <code>theme</code> is not defined because the theme will be set with service class but 
+                                            the <code>vendor</code> field is required for using the <a href="#idocs_usage_default_theme">default theme</a> option.
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </p>
 
                         <p>
+                            Todo: connect to own title
+
                             If you want to add a theme you must add group alias because all themes depends to own group.
                             Also to use multiple default theme you first must define group.
                             See multiple and default theme sections for more example.
@@ -388,69 +390,126 @@ public function boot()
                             Theme loading and other options are depends to your logic. You can use <code>ThemeManager</code> service in controller, custom middleware etc.
                         </p>
 
+                        <pre class="mb-0">
+                            <code class="php py-0">
+use LaravelReady\ThemeManager\Services\Theme;
+use LaravelReady\ThemeManager\Services\ThemeManager;
+                            </code>
+                        </pre>
+
+                        <p class="mb-5">
+                            ⚠️ <b>Remember</b>: framework and packages work with order and follow priorities. 
+                            Service class depends on <code>ThemeManagerMiddleware</code> and won't work in controller methods. 
+                            Because we are overwriting blade paths in middleware. 
+
+                            <i>
+                                This depends on the case, if you want to change to active theme or real-time actions will not work. And still, you can use static methods like update, delete, etc.
+                            </i>
+
+                            So we need to use service methods before the controller method fires or in the controller <code>constructor</code>.
+                        </p>
+
                         <!-- scanThemes -->
 
-                        <h4>
+                        <h5 class="mb-2">
                             Scan installed themes
-                        </h4>
+                        </h5>
 
-                        <p>
-                            <code>ThemeManager::scanThemes();</code> returns list of theme groups and their themes.
-
-                            Theme Manager, after themes scanned themes adds to cache.
-                            When you add new theme you should rescan the themes.
-                            Just pass <code>true</code> as parameter or use <code>ThemeManager::reScanThemes();</code> method.
+                        <p class="mt-2">
+                            Returns theme collection. After themes are scanned, adds to cache.
                         </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::scanThemes()
+                            </code>
+                        </pre>
 
                         <!-- getCurrentTheme -->
 
-                        <h4>
+                        <h5 class="mb-2">
                             Get current theme
-                        </h4>
+                        </h5>
 
-                        <p>
-                            <code>ThemeManager::getCurrentTheme();</code> returns current theme details.
+                        <p class="mt-2">
+                            Returns current 
+                            <a href="https://github.com/laravel-ready/theme-manager/blob/6f220af7d4d9cc2c12fda67672a0ef5690bc2ac8/src/Services/Theme.php#L16" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                Theme
+                            </a> 
+                            details.
                         </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::getCurrentTheme()
+                            </code>
+                        </pre>
 
                         <!-- getTheme -->
 
-                        <h4>
+                        <h5 class="mb-2">
                             Get target theme
-                        </h4>
+                        </h5>
 
-                        <p>
-                            <code>ThemeManager::getTheme();</code> returns requested theme details.
+                        <p class="mt-2">
+                            Returns requested 
+                            <a href="https://github.com/laravel-ready/theme-manager/blob/6f220af7d4d9cc2c12fda67672a0ef5690bc2ac8/src/Services/Theme.php#L16" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                Theme
+                            </a> 
+                            details.
                         </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::getTheme()
+                            </code>
+                        </pre>
 
                         <!-- setTheme -->
 
-                        <h4>
+                        <h5 class="mb-2">
                             Set current theme
-                        </h4>
+                        </h5>
 
-                        <p>
-                            <code>setTheme</code> is required two parameters. Target theme and theme group.
-
-                            <code>ThemeManager::setTheme('my-theme', 'theme-group')</code>
+                        <p class="mt-2 mb-0">
+                            <code>setTheme</code> is required <code>vendor/theme</code> pair.
                         </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::setTheme('vendor-x/theme-y')
+                            </code>
+                        </pre>
 
                         <!-- setThemeStatus -->
                         
-                        <h4>
+                        <h5 class="mb-2">
                             Set theme status
-                        </h4>
+                        </h5>
 
-                        <p>
-                            <code>setThemeStatus</code> is required two parameters. Target theme and theme group.
-
-                            <code>ThemeManager::setThemeStatus('my-theme', 'theme-group', true|false)</code>
+                        <p class="mt-2">
+                            <code>setThemeStatus</code> is required <code>vendor/theme</code> pair.
                         </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::setThemeStatus('vendor-x/theme-y', true|false)
+                            </code>
+                        </pre>
 
                         <p>
                             or update all themes
                         </p>
 
-                        <code>ThemeManager::setThemeStatusAll(true|false)</code>
+                        <pre class="mb-0">
+                            <code class="php py-0">
+ThemeManager::setThemeStatusAll(true|false)
+                            </code>
+                        </pre>
+
+                        // TODO: Add 'Theme' methods
                     </section>
 
                     <hr class="divider">
@@ -462,14 +521,21 @@ public function boot()
                         </h3>
 
                         <p class="mb-4">
-                            We can call regular views with <code>return View('welcome')</code>.
-                            If you want to call the theme view use <code>theme::</code> alias like <code>return View('theme::welcome')</code> in controller.
+                            We can call regular views with <code>return view('welcome')</code>.
+                            If you want to call the theme view use <code>theme::</code> alias like <code>return view('theme::welcome')</code> in the controller.
 
-                            <code>theme::</code> alias is universal gateway for Theme Manager.
-                            After you use <code>setTheme</code> method Theme Manager finds theme views then Laravel renders.
+                            <code>theme::</code> alias is auniversal gateway for Theme Manager.
+                            When you use the <code>setTheme</code> method Theme Manager finds theme views and applies them, then Laravel renders.
+                        </p>
 
-                            Also you  can't use like <code>theme::theme-name...</code>.
-                            You can only define themes with <code>ThemeManager</code> service class and middleware.
+                        <p class="mb-3">
+                            ⚠️ <b>#1</b> You can't use <code>theme::</code> alias like <code>theme::theme-name...</code>.
+                            You can only define themes with <code>ThemeManager</code> service class and middleware. This package focused to dynamic theming.
+                        </p>
+
+                        <p class="mb-5">
+                            ⚠️ <b>#2</b> View paths are <b>must be the same</b> for each theme. If you want to change the view path for the specific theme you have to change all themes for the target group.
+                            Otherwise, the target view is going to be broken on runtime because the path changed for other themes. Laravel throws view path not found exception.
                         </p>
 
                         <pre>
@@ -477,21 +543,23 @@ public function boot()
 class AnyController extends Controller
 {
     public function __construct() {
-        ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
+        ThemeManager::addDefaultTheme(['vendor-x/red-swan']);
 
-        $theme = request()->query('theme', 'green-energy');
+        $theme = request()->query('theme', 'vendor-x/green-energy');
 
         ThemeManager::setTheme($theme, 'web');
     }
 
     public function index(){
+        // laravel native
         return View('web.welcome');
     }
 
     public function anyPage(){
         ...
 
-        return View('theme::pages.any-page');
+        // our view path of templates
+        return View('theme::pages.home.index');
     }
 }
                             </code>
@@ -654,7 +722,7 @@ class AnyController extends Controller
 return [
     ...
 
-    'default_theme' => 'web:red-swan',
+    'default_theme' => 'vendor-x/red-swan',
 
     ...
 ];
@@ -673,8 +741,8 @@ return [
     ...
 
     'default_theme' => [
-        'web:red-swan',
-        'admin:admin-who'
+        'vendor-x/red-swan',
+        'egoistdev:admin-who'
     ],
 
     ...
@@ -693,16 +761,16 @@ return [
                         <pre class="mb-0">
                             <code class="php py-0">
 // add default theme/s
-ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
+ThemeManager::addDefaultTheme(['vendor-x/red-swan', 'egoistdev:admin-who']);
 
 // remove default theme/s
-ThemeManager::removeDefaultTheme(['web:red-swan', 'admin:admin-who']);
+ThemeManager::removeDefaultTheme(['vendor-x/red-swan', 'egoistdev:admin-who']);
                             </code>
                         </pre>
 
                         <p>
-                            Both of two usage requires default <code>group</code> definition on middleware.
-                            Just assign default group to <a href="#idocs_usage_middleware">middleware</a>. 
+                            Both of two usage requires default <code>vendor</code> definition on middleware.
+                            Just assign default vendor field to <a href="#idocs_usage_middleware">middleware</a>. 
                             If theme already defined in middleware this option does not working beacuse middleware <code>theme</code> definiton has high 
                             <a href="#idocs_usage_priority">priority</a>.
                         </p>
@@ -727,13 +795,13 @@ ThemeManager::removeDefaultTheme(['web:red-swan', 'admin:admin-who']);
 
                         <ol>
                             <li>
-                                Middleware defined theme comes first ( <i>if the theme is not found, goes to second check point</i> )
+                                <a href="#idocs_usage_middleware">Middleware</a> defined theme comes first ( <i>if the theme is not found, goes to second check point</i> )
                             </li>
                             <li>
-                                Service class defined theme ( <i>if the theme is not found, goes to third check point</i> )
+                                <a href="#idocs_usage_service">Service</a> class defined theme ( <i>if the theme is not found, goes to third check point</i> )
                             </li>
                             <li>
-                                Default theme ( <i>will define in config or service class</i> )
+                                Default theme ( <i>will define in <a href="#idocs_usage_default_theme">config or service</a> class</i> )
                             </li>
                             <li>
                                 If default theme is not exists throws error and application breaks
@@ -792,10 +860,16 @@ $ php artisan theme-manager:make
 
                         <pre>
                             <code class="yaml py-0">
-Theme Name:
-> Fantastic Theme
+Theme Group: (as slug. web, admin etc):
+> web
 
-Theme Description /optional/:
+Theme Vendor: (as slug):
+> theme-factory
+
+Theme Name:
+> awesome-blog
+
+Theme Description: /optional/:
 > Enim laboris minim occaecat incididunt eiusmod sit excepteur reprehenderit enim consectetur Lorem.
 
 Author Name:
@@ -804,10 +878,7 @@ Author Name:
 Author Contact Address or Email /optional/:
 > https://github.com/EgoistDeveloper/
 
-Theme Group:
-> web
-
-Theme "web:fantastic-theme" created successfully
+Theme "theme-factory/awesome-blog" created successfully for "web" group. Please check your "themes/theme-factory/awesome-blog" folder
                             </code>
                         </pre>
 
@@ -837,15 +908,16 @@ $ php artisan theme-manager:list
                             <code class="yaml py-0">
 ⚠️  Check the "theme-config.json" file in the own theme folder for more information.
 
-+-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
-| Index | Default | Name         | Alias        | Status  | Group | Description                       | Authors         | Version |
-+-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
-|  [1]  | -       | Admin Who?   | admin-who    | Active  | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
-|  [2]  | Yes     | Gentelella   | gentelella   | Active  | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
-|  [3]  | -       | Dark Night   | dark-night   | Active  | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
-|  [4]  | -       | Green Energy | green-energy | Active  | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
-|  [5]  | Yes     | Red Swan     | red-swan     | Passive | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
-+-------+---------+--------------+--------------+---------+-------+-----------------------------------+-----------------+---------+
++-------+---------+--------------+----------------------------+--------+-------+-----------------------------------+-----------------+---------+
+| Index | Default | Name         | Alias                      | Status | Group | Description                       | Authors         | Version |
++-------+---------+--------------+----------------------------+--------+-------+-----------------------------------+-----------------+---------+
+|  [1]  | -       | Admin Who?   | egoistdev/admin-who        | Active | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 1.0.0   |
+|  [2]  | -       | Dark Night   | egoistdev/dark-night       | Active | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
+|  [3]  | -       | Gentelella   | egoistme/gentelella        | Active | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
+|  [4]  | -       | awesome-blog | theme-factory/awesome-blog | Active | web   | Enim laboris minim occaecat in... | EgoistDeveloper | 1.0.0   |
+|  [5]  | -       | Green Energy | vendor-x/green-energy      | Active | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
+|  [6]  | Yes     | Red Swan     | vendor-x/red-swan          | Active | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
++-------+---------+--------------+----------------------------+--------+-------+-----------------------------------+-----------------+---------+
                             </code>
                         </pre>
 
@@ -857,7 +929,7 @@ $ php artisan theme-manager:list
 
                         <pre class="mb-0">
                             <code class="yaml py-0">
-$ php artisan theme-manager:destroy web:fantastic-theme
+$ php artisan theme-manager:destroy theme-factory/awesome-blog
                             </code>
                         </pre>
 
@@ -872,7 +944,7 @@ $ php artisan theme-manager:destroy web:fantastic-theme
 This theme will be delete. Are you sure? (yes/no):
 > yes
 
-Theme "web:fantastic-theme" deleted.
+Theme "theme-factory/awesome-blog" deleted.
                             </code>
                         </pre>
 
@@ -888,7 +960,7 @@ Theme "web:fantastic-theme" deleted.
 
                         <pre class="mb-0">
                             <code class="yaml py-0">
-$ php artisan theme-manager:status web:fantastic-theme true|false
+$ php artisan theme-manager:status theme-factory/awesome-blog true|false
                             </code>
                         </pre>
 
@@ -913,10 +985,14 @@ $ php artisan theme-manager:status all true|false
                         </h4>
 
                         <p>
-                            In your root folder create <code>themes</code> folder then add your themes to own <code>group</code> folder.
-                            Also you can change <code>themes</code> folder path with package configs (<i>must be in root folder</i>).
+                            <code>vendor-x</code>, <code>vendor-y</code>, and <code>vendor-z</code> are theme vendors.
+                            All themes will be in their own vendor folder. Each vendor folder contains can multiple themes.
 
                             Theme folder structure must be like this:
+                        </p>
+
+                        <p>
+                            ⚠️ Also, this folder structure required for remote theme managment. (In the future we will add support for store, update, licensing features).
                         </p>
 
                         <pre>
@@ -924,33 +1000,28 @@ $ php artisan theme-manager:status all true|false
 .
 └── src
     ├── app
-    ├── public
+    ├── bootstrap
+    ├── config
+    ├── database
     ├── ...
     ├── {themes}
-        ├── web
+        ├── vendor-x
         │    ├── my-awesome-theme
         │    ├── your-awesome-theme
         │    ├── ...
-        ├── admin
+        ├── vendor-y
         │    ├── banana
         │    ├── cerry
         │    ├── apple
         │    ├── orange
         │    ├── ...
-        ├── other-group
+        ├── vendor-z
         │    ├── other-theme
         │    ├── other-other-theme
         │    ├── ...
         ├── ...
                             </code>
                         </pre>
-
-                        <p>
-                            In this case <code>web</code>, <code>admin</code> and <code>other-group</code> is theme group.
-                            We use groups for specific purposes. Then we can add specific themes to own group folder.
-
-                            You should publish this package configs, see installation part.
-                        </p>
                     </section>
                 </div>
             </div>
